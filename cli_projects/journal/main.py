@@ -1,20 +1,39 @@
+from datetime import date
+import os
+
 print("-------Welcome to your daily journals------")
-print("What would you like to do today?")
+current_date = date.today()
+display_day = current_date.strftime("%A")
+display_date = current_date.strftime("%d-%B-%Y")
+file_format_date = current_date.strftime("%Y_%m_%d")
+print(f"Today is {display_date}, a {display_day}")
 
-date = input("Enter the date in yyyy-mm-dd format: ")
-notes = input("Enter your notes (max 4000 chars allowed):\n")
+print("Start recording your journals for the day")
+print("Enter your notes here (type 'done' when you are finished recording: ")
 
-content = f"{date} -> {notes}"
+journals = []
+journal_num = 1
+entries = ""
 
-with open("files/log.txt", "r") as file:
-    journal = file.readlines()
+while entries.lower() != "done":
+    entries = input(f"Journal {journal_num}: ").strip()
+    if entries.lower() != "done":
+        journals.append(entries + "\n")
+        journal_num += 1
 
-journal.append(content + "\n")
+notes_directory = "files"
+if not os.path.exists(notes_directory):
+    os.makedirs(notes_directory)
 
-with open("files/log.txt", 'w') as file:
-    file.writelines(journal)
+filename = f"{notes_directory}/journals_{file_format_date}.txt"
 
-
-for note in journal:
-    print(note)
+try:
+    print("Writing journals to file.....")
+    with open(filename, "a") as file:
+        file.writelines(journals)
+    print("Entries Saved Successfully!")
+    print(f"Saved {len(journals)} entries to {filename}")
+except Exception as e:
+    print(f"An error occurred while writing to the file: {e}")
+    raise SystemExit(1)  # Exit the program if writing fails
 
